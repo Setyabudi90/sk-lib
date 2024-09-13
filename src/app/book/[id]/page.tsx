@@ -5,8 +5,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
+interface BookData {
+  imageUrl: string;
+  title: string;
+  authors: string;
+  publisher?: string;
+  categories?: string[];
+  pageCount: number;
+  description: string;
+  infoLink: string;
+}
+
 export default function Page({ params: { id } }: { params: { id: string } }) {
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<BookData>({
+    imageUrl: "",
+    title: "",
+    authors: "",
+    publisher: undefined,
+    categories: [],
+    pageCount: 0,
+    description: "",
+    infoLink: "",
+  });
 
   const fetchBookById = async (): Promise<void> => {
     const request = await DetailData(id);
@@ -18,8 +38,8 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
   }, [id]);
 
   const validateDescription = (text: string): string => {
-    if (text !== undefined) {
-      if (text?.length >= 501) {
+    if (text) {
+      if (text.length >= 501) {
         return text.substring(0, 610) + "...";
       }
     }
@@ -46,21 +66,23 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
         </div>
         <div className="flex flex-col justify-start items-start gap-4 text-white">
           <div className="flex flex-col gap-2">
-            <span className="text-3xl font-bold">{data?.title}</span>
+            <span className="text-3xl font-bold">{data.title}</span>
             <div className="flex gap-2 flex-wrap">
               <span className="whitespace-nowrap rounded-full bg-purple-400 px-2.5 py-0.5 text-sm">
-                Authors: {data?.authors}
+                Authors: {data.authors}
               </span>
-              {data?.publisher && (
+              {data.publisher && (
                 <span className="whitespace-nowrap rounded-full bg-purple-400 px-2.5 py-0.5 text-sm">
                   Publisher: {data.publisher}
                 </span>
               )}
+              {data.categories && data.categories.length > 0 && (
+                <span className="whitespace-nowrap rounded-full bg-purple-400 px-2.5 py-0.5 text-sm">
+                  Category: {data.categories[0]}
+                </span>
+              )}
               <span className="whitespace-nowrap rounded-full bg-purple-400 px-2.5 py-0.5 text-sm">
-                Category: {data?.categories !== undefined && data.categories[0]}
-              </span>
-              <span className="whitespace-nowrap rounded-full bg-purple-400 px-2.5 py-0.5 text-sm">
-                Popularity: {data?.pageCount}
+                Popularity: {data.pageCount}
               </span>
             </div>
           </div>
@@ -68,11 +90,11 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
           <p
             className="text-justify leading-relaxed max-w-xl"
             dangerouslySetInnerHTML={{
-              __html: validateDescription(data?.description),
+              __html: validateDescription(data.description),
             }}
           />
 
-          <Link href={`${data?.infoLink}`} className="underline text-blue-300">
+          <Link href={data.infoLink} className="underline text-blue-300">
             See on Google Books
           </Link>
         </div>
