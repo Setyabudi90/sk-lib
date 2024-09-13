@@ -39,7 +39,6 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
-  themeColor: "#0d161b",
 };
 
 const roboto: NextFont = Roboto({
